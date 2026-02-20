@@ -1,0 +1,6 @@
+name: FoxWars
+version: '1.0'
+main: nl.phoenixdev.foxWars.FoxWars
+api-version: '1.20'
+authors: [ MysticPhoenix ]
+description: Made by PhoenixDev

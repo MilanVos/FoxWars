@@ -1,0 +1,13 @@
+# FoxWars Configuration
+# All locations will be saved here automatically via /fox commands
+
+# Game Settings
+min-players: 2
+countdown-seconds: 10
+
+# Map Locations (Do not edit manually unless you know what you're doing)
+lobby:
+teams:
+generators:
+  SHARD: []
+  BLOOD: []
