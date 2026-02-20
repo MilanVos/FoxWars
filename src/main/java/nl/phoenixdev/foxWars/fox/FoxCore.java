@@ -32,15 +32,32 @@ public class FoxCore {
         entity.setPersistent(true);
         entity.setRemoveWhenFarAway(false);
         
-        // Give the Fox some "core" stats
         Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(100.0);
         entity.setHealth(100.0);
+
+        Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED)).setBaseValue(0.0);
+        Objects.requireNonNull(entity.getAttribute(Attribute.GENERIC_FOLLOW_RANGE)).setBaseValue(10.0);
+        entity.setCollidable(false);
+    }
+
+    public void stayInPlace() {
+        if (entity != null && alive && !entity.isDead()) {
+            if (entity.getLocation().distance(spawnLocation) > 0.5) {
+                entity.teleport(spawnLocation);
+            }
+        }
+    }
+
+    public void damageNearby(Player player) {
+        if (entity != null && alive && !entity.isDead()) {
+            player.damage(2.0, entity);
+            player.sendMessage(org.bukkit.ChatColor.RED + "The Fox bites you!");
+        }
     }
 
     public void handleDamage(Player attacker, double damage) {
         if (!alive) return;
         
-        // Make the fox angry and attack back
         entity.setTarget(attacker);
         
         if (entity.getHealth() <= damage) {
@@ -53,7 +70,6 @@ public class FoxCore {
         if (entity != null) {
             entity.remove();
         }
-        // Notify game manager (handled later)
     }
 
     public Team getTeam() {

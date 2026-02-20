@@ -21,47 +21,58 @@ public class FoxWarsCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) return true;
+        if (!(sender instanceof Player player)) {
+            if (args.length > 0 && args[0].equalsIgnoreCase("forcestop")) {
+                plugin.getGameManager().cleanup();
+                plugin.getGameManager().setState(nl.phoenixdev.foxWars.game.GameState.LOBBY);
+                if (sender != null) sender.sendMessage(ChatColor.RED + "Game forcefully stopped and cleaned up!");
+                return true;
+            }
+            return true;
+        }
 
         if (args.length == 0) {
-            player.sendMessage(ChatColor.YELLOW + "Usage: /fox <spawn|shop|generator|setteam>");
+            player.sendMessage(ChatColor.YELLOW + "Usage: /fox <setlobby|setspawn|setfox|setshop|addgenerator|forcestop>");
             return true;
         }
 
         switch (args[0].toLowerCase()) {
-            case "spawn" -> {
+            case "setlobby" -> {
+                plugin.getConfigManager().setLocation("lobby", player.getLocation());
+                player.sendMessage(ChatColor.GREEN + "Lobby location set!");
+            }
+            case "setspawn" -> {
                 if (args.length < 2) return false;
                 Team team = Team.valueOf(args[1].toUpperCase());
-                FoxCore fox = new FoxCore(team, player.getLocation());
-                fox.spawn();
-                plugin.getGameManager().registerFox(team, fox);
-                player.sendMessage(ChatColor.GREEN + "Spawned " + team.getName() + " Fox!");
+                plugin.getConfigManager().setLocation("teams." + team.name() + ".spawn", player.getLocation());
+                player.sendMessage(ChatColor.GREEN + team.getName() + " spawn location set!");
             }
-            case "shop" -> {
-                Villager shop = (Villager) player.getWorld().spawnEntity(player.getLocation(), EntityType.VILLAGER);
-                shop.setCustomName(ChatColor.GOLD + "Fox Shop");
-                shop.setCustomNameVisible(true);
-                shop.setAI(false);
-                player.sendMessage(ChatColor.GREEN + "Spawned Fox Shopkeeper!");
+            case "setfox" -> {
+                if (args.length < 2) return false;
+                Team team = Team.valueOf(args[1].toUpperCase());
+                plugin.getConfigManager().setLocation("teams." + team.name() + ".fox", player.getLocation());
+                player.sendMessage(ChatColor.GREEN + team.getName() + " Fox location set!");
             }
-            case "generator" -> {
+            case "setshop" -> {
+                if (args.length < 2) return false;
+                Team team = Team.valueOf(args[1].toUpperCase());
+                plugin.getConfigManager().setLocation("teams." + team.name() + ".shop", player.getLocation());
+                player.sendMessage(ChatColor.GREEN + team.getName() + " Shop location set!");
+            }
+            case "addgenerator" -> {
                 if (args.length < 2) return false;
                 Generator.Type type = Generator.Type.valueOf(args[1].toUpperCase());
-                Generator gen = new Generator(player.getLocation(), type);
-                plugin.getGameManager().registerGenerator(gen, plugin);
-                player.sendMessage(ChatColor.GREEN + "Spawned " + type.name() + " Generator!");
+                plugin.getConfigManager().addGeneratorLocation(type, player.getLocation());
+                player.sendMessage(ChatColor.GREEN + type.name() + " Generator added!");
             }
-            case "setteam" -> {
-                if (args.length < 3) return false;
-                Player target = plugin.getServer().getPlayer(args[1]);
-                Team team = Team.valueOf(args[2].toUpperCase());
-                if (target != null) {
-                    plugin.getGameManager().assignTeam(target, team);
-                    player.sendMessage(ChatColor.GREEN + "Set " + target.getName() + " to " + team.getName());
-                }
+            case "forcestop" -> {
+                plugin.getGameManager().cleanup();
+                plugin.getGameManager().setState(nl.phoenixdev.foxWars.game.GameState.LOBBY);
+                player.sendMessage(ChatColor.RED + "Game forcefully stopped and cleaned up!");
+                plugin.getServer().broadcastMessage(ChatColor.RED + player.getName() + " has forcefully stopped the game!");
             }
-        }
 
-        return true;
+        }
+    return true;
     }
 }

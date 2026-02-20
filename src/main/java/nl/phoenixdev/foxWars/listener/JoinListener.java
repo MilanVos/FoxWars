@@ -2,6 +2,7 @@ package nl.phoenixdev.foxWars.listener;
 
 import nl.phoenixdev.foxWars.FoxWars;
 import nl.phoenixdev.foxWars.game.GameState;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -35,11 +36,21 @@ public class JoinListener implements Listener {
     }
 
     private void checkStart() {
-        if (plugin.getServer().getOnlinePlayers().size() >= 2) { // Minimum 2 players to start
-            // Start countdown logic (simplified)
+        int minPlayers = plugin.getConfig().getInt("min-players", 2);
+        int countdown = plugin.getConfig().getInt("countdown-seconds", 10);
+        
+        if (plugin.getServer().getOnlinePlayers().size() >= minPlayers) { 
             plugin.getGameManager().setState(GameState.STARTING);
-            plugin.getServer().broadcastMessage(ChatColor.GREEN + "Sufficient players joined! Game starting in 10 seconds...");
-            // Trigger actual game start after delay (handled in GameManager or separate task)
+            plugin.getServer().broadcastMessage(ChatColor.GREEN + "Sufficient players joined! Game starting in " + countdown + " seconds...");
+            
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (plugin.getServer().getOnlinePlayers().size() >= minPlayers) {
+                    plugin.getGameManager().startGame(plugin);
+                } else {
+                    plugin.getGameManager().setState(GameState.LOBBY);
+                    plugin.getServer().broadcastMessage(ChatColor.RED + "Not enough players! Countdown cancelled.");
+                }
+            }, countdown * 20L); 
         }
     }
 }

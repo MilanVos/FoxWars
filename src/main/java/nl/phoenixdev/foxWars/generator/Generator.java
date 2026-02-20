@@ -10,8 +10,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Generator {
     public enum Type {
-        SHARD(Material.IRON_INGOT, ChatColor.GRAY + "Shard", 40L), // 2 seconds
-        BLOOD(Material.REDSTONE, ChatColor.RED + "Blood", 100L);   // 5 seconds
+        SHARD(Material.IRON_INGOT, ChatColor.GRAY + "Shard", 40L),
+        BLOOD(Material.REDSTONE, ChatColor.RED + "Blood", 100L);
 
         private final Material material;
         private final String name;

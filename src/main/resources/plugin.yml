@@ -4,3 +4,7 @@ main: nl.phoenixdev.foxWars.FoxWars
 api-version: '1.20'
 authors: [ MysticPhoenix ]
 description: Made by PhoenixDev
+commands:
+  fox:
+    description: Main command for FoxWars
+    usage: /<command> <setlobby|setspawn|setfox|setshop|addgenerator|forcestop>
